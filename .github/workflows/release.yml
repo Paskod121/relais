@@ -1,5 +1,6 @@
-# Opens a release PR from Conventional Commits, then publishes to npm when it is merged.
+# Opens a release PR from Conventional Commits, then stages the release on npm when it is merged.
 # Publishing uses npm trusted publishing (OIDC): no npm token is stored in this repository.
+# Releases are staged: a maintainer approves each version with 2FA on npmjs.com before it is public.
 # The npm trusted publisher must point to this exact file name: release.yml
 name: Release
 
@@ -43,10 +44,11 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
-      - name: Use an npm version that supports trusted publishing
+      - name: Use an npm version that supports trusted and staged publishing
         run: npm install -g npm@^11.5.1 && npm --version
       - run: npm ci
       - run: npm run check
       - run: npm run build
-      - name: Publish with provenance
-        run: npm publish --access public
+      # A compromised pipeline alone can never ship a release.
+      - name: Stage the release for maintainer approval
+        run: npm stage publish --access public
