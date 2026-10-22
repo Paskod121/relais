@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas / Questions et idées
+    url: https://github.com/Paskod121/relais/discussions
+    about: Ask anything in Discussions. / Pose tes questions dans Discussions.
+  - name: Security issue / Faille de sécurité
+    url: https://github.com/Paskod121/relais/security/advisories/new
+    about: Report vulnerabilities privately, never in a public issue.

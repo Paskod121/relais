@@ -1,0 +1,60 @@
+{
+  "name": "@pasod121/relais",
+  "version": "0.0.0",
+  "description": "Download your dependencies once, install them on every machine in the room. A zero-config local npm relay for classrooms, bootcamps and hackathons on expensive or unreliable internet.",
+  "keywords": [
+    "npm",
+    "registry",
+    "cache",
+    "offline",
+    "low-bandwidth",
+    "classroom",
+    "bootcamp",
+    "hackathon",
+    "africa",
+    "lan"
+  ],
+  "homepage": "https://github.com/Paskod121/relais#readme",
+  "bugs": {
+    "url": "https://github.com/Paskod121/relais/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Paskod121/relais.git"
+  },
+  "license": "MIT",
+  "author": "Pascal Sewonou (Paskod)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "relais": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "prepublishOnly": "npm run check && npm run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.2",
+    "@types/node": "^22.18.0",
+    "typescript": "^7.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

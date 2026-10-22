@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.tgz
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.relais-cache/

@@ -1,0 +1,19 @@
+name: Feature idea / Proposer une idée
+description: Suggest something that would help your group install less. / Une idée qui ferait économiser plus.
+labels: ["enhancement", "needs triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem you face / Le problème que tu rencontres
+      description: Describe the situation first, not the solution. Who, where, how often.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea / Ton idée
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you do today instead / Ce que tu fais aujourd'hui à la place

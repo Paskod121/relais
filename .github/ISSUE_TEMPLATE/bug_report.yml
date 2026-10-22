@@ -1,0 +1,52 @@
+name: Bug report / Signaler un bug
+description: Something does not work as documented. / Quelque chose ne marche pas comme prévu.
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. English or French, both are fine.
+        Merci ! Tu peux écrire en français ou en anglais.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened? / Que s'est-il passé ?
+      description: What you ran, what you expected, what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce / Comment reproduire
+      placeholder: |
+        relais estimate --size 215 --installs 30
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: relais version (relais --version)
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS and Node version / Système et version de Node
+      placeholder: Windows 11, Node 22.18
+    validations:
+      required: true
+  - type: dropdown
+    id: network
+    attributes:
+      label: Network / Réseau
+      options:
+        - Phone hotspot / Partage de connexion
+        - Campus or office Wi-Fi / Wi-Fi campus ou bureau
+        - Home Wi-Fi / Wi-Fi maison
+        - Wired / Câble
+        - Other / Autre
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      render: shell
