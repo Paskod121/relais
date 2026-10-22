@@ -22,4 +22,4 @@ Contributors who have landed several meaningful pull requests and reviewed other
 
 ## Changes to this document
 
-Changes to governance go through a pull request open for at least 14 days.
+Changes to governance go through a pull request open for at least 14 days .
