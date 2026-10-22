@@ -1,33 +1,74 @@
-# Architecture (draft, open for discussion)
+# Architecture
 
-This describes the relay planned for Phase 1. Nothing here is final. Comment in [Discussions](https://github.com/Paskod121/relais/discussions).
+Open for discussion in [Discussions](https://github.com/Paskod121/relais/discussions).
 
-## Shape
+## Layout
 
 ```text
-                 internet (once per package)
-                          |
-                 registry.npmjs.org
-                          |
-   +----------------- relay machine -----------------+
-   |  HTTP registry proxy   |   verified tarball store |
-   +--------------------------------------------------+
-            |  local Wi-Fi or phone hotspot  |
-     student laptop    student laptop    student laptop
-       (npm install)     (npm install)     (npm install)
+src/
+  cli.ts              command line: arguments, human and JSON output, exit codes
+  check.ts            checkPackage(): resolve ecosystem, gather facts, evaluate
+  policy.ts           evaluate(): pure decision, facts + policy + clock -> report
+  messages.ts         describe() and advise(): what it means, what to do (en, fr)
+  lookalike.ts        typo and lookalike detection, shared by all ecosystems
+  core/
+    http.ts           fetch with timeout, 10 MB cap, no redirects; fixed endpoints
+    osv.ts            OSV advisories and fixed versions, for any ecosystem
+    text.ts           sanitizing untrusted text, version checks, version ordering
+  ecosystems/
+    types.ts          the Ecosystem interface every adapter implements
+    index.ts          registry of adapters, "npm:" style prefixes, planned ones
+    npm.ts            the npm adapter
+    npm-popular.ts    widely used npm names, for lookalike detection only
 ```
 
-## Decisions so far
+## Flow of one check
 
-1. **Plain HTTP npm registry protocol.** Clients are stock npm, pnpm or yarn pointed at the relay. No client plugin to install.
-2. **Metadata always comes from upstream when online.** The relay caches package documents (packuments) but never edits them.
-3. **Tarballs are verified before being stored or served.** The relay computes the hash and compares it to the `integrity` field from the upstream metadata. A mismatch is dropped and logged.
-4. **Offline mode serves only what is already verified.** If upstream is unreachable, cached metadata and tarballs are served as they are; nothing new is invented.
-5. **No runtime dependencies** in the first version. Node's built-in `http`, `crypto` and `fs` are enough.
+```text
+  "lodash@4.17.15"
+        |
+  resolveTarget ---------> npm adapter (default) or "pypi:" ... (planned)
+        |
+  gatherFacts             version manifest (~3 KB), search entry (~5 KB),
+  (adapter)               full metadata only when needed, OSV advisories
+        |                 every string sanitized, every version validated
+        v
+  evaluate (pure)  -----> findings: block / warn / info, verdict, fix version
+        |
+  describe + advise ----> plain explanation + next command, in English or French
+        |
+  cli --------------------> text for humans, or JSON for agents; exit 0 / 2 / 1
+```
+
+## Design rules
+
+1. **Facts and decisions are separate.** Adapters only collect; `evaluate` only decides. Every rule is unit tested without the network.
+2. **Fail closed.** Registry unreachable: error, exit 1, never "safe". A secondary source missing: a visible warning.
+3. **Every outside string is hostile.** See [THREAT_MODEL.md](THREAT_MODEL.md).
+4. **Frugal by default.** Small endpoints first; big documents only when they are small anyway.
+5. **No runtime dependencies, no telemetry.**
+6. **One adapter per ecosystem.** Adding PyPI must not touch the rules: [ADDING_AN_ECOSYSTEM.md](ADDING_AN_ECOSYSTEM.md).
+
+## Next: the local registry (Phase 2)
+
+```text
+  agents, npm, pnpm, bun, npx (MCP)
+               |
+               v
+  +-------- relais (local) --------+
+  | registry proxy                  |
+  | same policy as `relais check`   |
+  | tarball integrity verification  |
+  | audit log + phantom-name log    |
+  | verified cache (offline)        |
+  +---------------------------------+
+               |
+               v
+      registries, OSV
+```
 
 ## Open questions
 
-- Discovery: mDNS (`relais.local`) works on most home networks but is often blocked on campus Wi-Fi. Fallback: show the IP and a QR code.
-- Storage limits on small laptops: when to evict, and how to pin a session pack.
-- HTTPS on a LAN without certificate warnings, or plain HTTP with integrity checks only.
-- Windows firewall prompts on first run: how to make them understandable for a beginner.
+- How to attribute an install to a given agent session in the audit log.
+- Default cooldown: 72 hours today. Shorter for security fixes of packages already in a project?
+- Lockfile formats to support first in `relais scan`: npm v2/v3, then pnpm and yarn.

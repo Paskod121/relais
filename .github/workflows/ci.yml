@@ -33,4 +33,4 @@ jobs:
       - run: npm run check
       - run: npm run build
       - name: Smoke test the CLI
-        run: node dist/cli.js estimate --size 215 --installs 30 --price 540
+        run: node dist/cli.js --version && node dist/cli.js --help

@@ -3,7 +3,10 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
+    # Same rule relais applies to others: no release younger than 3 days.
+    cooldown:
+      default-days: 3
     groups:
       dev-tools:
         patterns: ["*"]
@@ -13,6 +16,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     groups:
       actions:
         patterns: ["*"]

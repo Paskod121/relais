@@ -25,6 +25,8 @@ Only the latest published version receives security fixes while the project is b
 
 ## Security design commitments
 
+- The full list of attacks we defend against, and the known gaps, is in [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
+- `relais check` only reads metadata. It never downloads or runs package code.
 - Every package served by a relay is verified against the integrity hash published by the official registry. A relay never serves a tarball it cannot verify.
 - No package metadata is generated locally.
 - Releases are published only from CI, with npm trusted publishing and provenance. No long-lived npm token exists for this project.

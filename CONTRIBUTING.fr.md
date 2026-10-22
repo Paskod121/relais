@@ -4,9 +4,10 @@ Merci de ton aide. Les contributions en français ou en anglais sont également 
 
 ## Les contributions les plus utiles en ce moment
 
-1. **Les rapports de terrain.** Des chiffres réels d'une séance : nombre de machines, ce qui a été installé, comment les gens étaient connectés, prix de la data. Utilise le [formulaire de rapport de terrain](https://github.com/Paskod121/relais/issues/new?template=field_report.yml).
+1. **Les signalements de paquets.** Une IA t'a proposé un paquet qui imitait un paquet connu, ou qui a fait quelque chose de bizarre à l'installation ? Utilise le [formulaire de signalement](https://github.com/Paskod121/relais/issues/new?template=package_report.yml). Si le nom **n'existe pas encore**, signale-le [en privé](https://github.com/Paskod121/relais/security/advisories/new) : une liste publique de noms inventés est un cadeau pour les attaquants.
 2. **Des retours sur la conception** dans [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), via les [Discussions](https://github.com/Paskod121/relais/discussions).
-3. **Du code**, en commençant par les issues marquées `good first issue`.
+3. **Du code**, en commençant par les issues marquées `good first issue`. La plus grosse contribution possible est un nouvel écosystème : voir [docs/ADDING_AN_ECOSYSTEM.md](docs/ADDING_AN_ECOSYSTEM.md).
+4. **Les attaques.** Lis [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) et essaie de casser relais. Signale ce qui marche en privé.
 
 ## Installer le projet
 
@@ -21,13 +22,13 @@ npm run check
 
 `npm ci` télécharge environ 71 Mo. Si la data te coûte cher, fais-le une fois sur un Wi-Fi ; rien d'autre dans le travail quotidien n'a besoin du réseau.
 
-| Commande                                            | Ce qu'elle fait                                                    |
-| --------------------------------------------------- | ------------------------------------------------------------------ |
-| `npm run check`                                     | Lint, vérification des types et tests. À lancer avant chaque push. |
-| `npm test`                                          | Les tests seuls, avec le lanceur intégré à Node.                   |
-| `npm run format`                                    | Formate et corrige le lint avec Biome.                             |
-| `npm run build`                                     | Compile `src/` vers `dist/`.                                       |
-| `node src/cli.ts estimate --size 215 --installs 30` | Lance la CLI depuis les sources, sans build.                       |
+| Commande                        | Ce qu'elle fait                                                    |
+| ------------------------------- | ------------------------------------------------------------------ |
+| `npm run check`                 | Lint, vérification des types et tests. À lancer avant chaque push. |
+| `npm test`                      | Les tests seuls, avec le lanceur intégré à Node.                   |
+| `npm run format`                | Formate et corrige le lint avec Biome.                             |
+| `npm run build`                 | Compile `src/` vers `dist/`.                                       |
+| `node src/cli.ts check express` | Lance la CLI depuis les sources, sans build.                       |
 
 ## Comment on travaille
 

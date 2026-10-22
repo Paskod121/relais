@@ -1,0 +1,45 @@
+name: Suspicious or invented package / Paquet suspect ou inventé
+description: An AI suggested a package that looked wrong. / Une IA a proposé un paquet louche.
+title: "Package report: "
+labels: ["package report", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **If the name does not exist on the registry yet, do not post it here**: attackers read public issues to register invented names. Report it privately instead: https://github.com/Paskod121/relais/security/advisories/new
+        **Si le nom n'existe pas encore, ne le publie pas ici** : des attaquants lisent les issues publiques pour enregistrer les noms inventés. Signale-le en privé : https://github.com/Paskod121/relais/security/advisories/new
+
+        Do not paste secrets, tokens or private code. Ne colle aucun secret ni code privé.
+  - type: input
+    id: package
+    attributes:
+      label: Package name and version / Nom et version du paquet
+      placeholder: some-package@1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What happened / Ce qui s'est passé
+      options:
+        - It existed but looked like a copy of a known package / Il ressemblait à un paquet connu
+        - It ran something unexpected at install / Il a exécuté quelque chose à l'installation
+        - relais blocked or warned and I think it was wrong / relais s'est trompé
+        - Other / Autre
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Which tool suggested it / Quel outil l'a proposé
+      placeholder: Cursor, Claude Code, Copilot, ChatGPT...
+  - type: textarea
+    id: context
+    attributes:
+      label: What you asked for / Ce que tu avais demandé
+      description: The task, in a sentence. This helps find names models invent again and again.
+  - type: textarea
+    id: output
+    attributes:
+      label: relais output (optional)
+      render: shell

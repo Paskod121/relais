@@ -1,10 +1,10 @@
 <h1 align="center">relais</h1>
 
-<p align="center"><strong>Télécharge tes dépendances une fois. Installe-les sur toutes les machines de la salle.</strong></p>
+<p align="center"><strong>Ton agent IA installe des paquets. relais vérifie chacun d'eux avant.</strong></p>
 
 <p align="center">
   <a href="https://github.com/Paskod121/relais/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Paskod121/relais/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://www.npmjs.com/package/@pasod121/relais"><img alt="npm" src="https://img.shields.io/npm/v/@pasod121/relais"></a>
+  <a href="https://www.npmjs.com/package/@paskod121/relais"><img alt="npm" src="https://img.shields.io/npm/v/@paskod121/relais"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/Paskod121/relais"><img alt="OpenSSF Scorecard" src="https://api.scorecard.dev/projects/github.com/Paskod121/relais/badge"></a>
   <a href="LICENSE"><img alt="Licence : MIT" src="https://img.shields.io/badge/licence-MIT-blue"></a>
 </p>
@@ -13,75 +13,87 @@
 
 ---
 
-Un projet Next.js neuf télécharge environ **215 Mo** de paquets. Dans une salle de 30, ça fait **6,45 Go** d'octets identiques tirés d'Internet 30 fois, payés sur la data mobile de chaque étudiant.
+Les agents de code lancent maintenant `npm install` tout seuls, et personne ne lit ce qu'ils récupèrent. Selon les études publiées, les modèles de langage inventent des noms de paquets dans près d'un échantillon de code sur cinq, des attaquants enregistrent ces noms, et des vers comme Shai-Hulud se sont propagés à des centaines de vrais paquets en quelques jours.
 
-relais est un petit relais local pour npm. Une machine de la salle récupère chaque paquet une seule fois ; toutes les autres l'installent depuis elle, par le Wi-Fi local ou un partage de connexion, sans consommer de data.
+relais se place entre ta machine et npm et répond à une seule question avant toute installation : **peut-on faire confiance à ce paquet, oui ou non, et pourquoi ?**
 
-## Où en est le projet
-
-**Au tout début. Le relais est conçu en public.** Ce qui existe aujourd'hui, c'est `relais estimate`, qui calcule ce qu'un groupe économiserait. On collecte des chiffres réels dans des salles de cours avant de construire le relais, pour que la conception suive le terrain et pas l'inverse.
-
-Si tu enseignes, organises une formation ou un hackathon, un [rapport de terrain](https://github.com/Paskod121/relais/issues/new?template=field_report.yml) est la contribution la plus utile en ce moment.
-
-## Ce que ça coûte aujourd'hui
-
-Mesuré le 22 octobre 2026 avec un cache npm vide (npm 10.9, Node 22) :
-
-| Stack de départ           | Téléchargé par machine | Pour une salle de 30 |
-| ------------------------- | ---------------------- | -------------------- |
-| Next.js + React           | 215 Mo                 | 6,45 Go              |
-| Tailwind + Vite           | 181 Mo                 | 5,43 Go              |
-| Vite + React + TypeScript | 177 Mo                 | 5,31 Go              |
-| Express                   | 8 Mo                   | 240 Mo               |
-
-Méthode et chiffres bruts : [docs/MEASUREMENTS.md](docs/MEASUREMENTS.md).
-
-## Essayer l'estimateur
+## Essayer
 
 ```sh
-RELAIS_LANG=fr npx @pasod121/relais estimate --size 215 --installs 30 --price 540 --currency XOF
+RELAIS_LANG=fr npx @paskod121/relais check express react_dom
 ```
 
 ```text
-30 machines qui installent 215 Mo chacune
+express@5.3.0  OK
+  info  Publié il y a 13 jours.
+  info  Provenance vérifiée : cette version a été construite et publiée depuis une CI publique.
 
-  Téléchargé sans relais     6,45 Go
-  Téléchargé avec relais     215 Mo
-  Data évitée                6,24 Go
-
-  Coût : 3 483 F CFA -> 116 F CFA
-  Économisé                  3 367 F CFA
+react_dom  BLOQUÉ
+  BLOQUÉ  react_dom n'existe pas sur npm. Les assistants IA inventent souvent des noms
+          de paquets, et des attaquants les enregistrent ensuite pour piéger ceux qui
+          les installent.
+          Que faire : Si tu voulais react-dom : npm install react-dom
 ```
+
+Chaque problème vient avec l'étape suivante, écrite pour quelqu'un qui a commencé à coder le mois dernier : la commande exacte pour installer le bon paquet, ou pour passer à la première version qui corrige une faille connue.
 
 Nécessite Node 22.18 ou plus récent.
 
-## Comment le relais fonctionnera
+## Ce qui est vérifié
 
-1. Une machine lance `relais` et s'annonce sur le réseau local.
-2. Les autres machines pointent npm vers elle en une seule commande.
-3. La première demande d'un paquet part vers le registre officiel ; toutes les suivantes sont servies en local.
-4. Chaque paquet servi est vérifié contre l'empreinte publiée par le registre officiel : un relais ne peut jamais injecter de code.
-5. Un compteur affiche la data et l'argent économisés après chaque séance.
+| Vérification                                      | Verdict                                      | Pourquoi                                                                         |
+| ------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------- |
+| Le nom existe sur npm                             | Bloqué sinon                                 | Les noms inventés sont la porte d'entrée du slopsquatting                        |
+| Malware connu (alertes OSV `MAL-`)                | Bloqué                                       | Les paquets malveillants publiés sont répertoriés en quelques heures             |
+| Âge de la version                                 | Bloqué sous 72 h (réglable)                  | La plupart des versions piégées sont repérées en quelques jours                  |
+| Sosie d'un paquet populaire                       | Attention                                    | Typosquatting et noms voisins qu'une IA a pu confondre                           |
+| Paquet à la fois tout neuf et presque pas utilisé | Bloqué (`--allow` pour le tien)              | Le profil d'un nom enregistré pour piéger                                        |
+| Scripts à l'installation                          | Attention                                    | Le moyen habituel pour un malware de s'exécuter chez toi                         |
+| Failles connues, abandon                          | Attention, avec la première version corrigée | Vieux projets et versions suggérées par l'IA figent souvent des versions cassées |
+| Provenance de la construction                     | Info                                         | Relie la version à son code source et à sa CI publique                           |
 
-La conception est ouverte à la discussion dans [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Quand quelque chose ne peut pas être vérifié, relais le dit. Il ne déclare jamais « sûr » par défaut.
 
-## Principes
+## Pour les agents et la CI
 
-- **Zéro configuration** pour la personne qui installe. S'il faut un tutoriel, c'est raté.
-- **Jamais moins sûr que npm.** L'intégrité est vérifiée ; rien n'est considéré fiable parce qu'il est local.
-- **Peu coûteux pour contribuer.** Aucune dépendance à l'exécution. L'environnement de dev complet télécharge environ 71 Mo, surtout les compilateurs TypeScript et Biome.
-- **Mesuré, pas supposé.** Une fonctionnalité arrive quand les rapports de terrain montrent qu'elle compte.
+```sh
+npx @paskod121/relais check un-paquet --json
+```
 
-## Pourquoi ce projet
+| Code de sortie | Signification                                                                         |
+| -------------- | ------------------------------------------------------------------------------------- |
+| 0              | Rien de bloquant. Lis les avertissements.                                             |
+| 2              | Au moins un paquet est bloqué. Ne pas installer.                                      |
+| 1              | Vérification impossible (réseau, registre, nom invalide). À considérer comme non sûr. |
 
-Les gestionnaires de paquets sont pensés pour la fibre illimitée. Dans une grande partie de l'Afrique, et dans les salles de cours, conférences et centres communautaires partout ailleurs, la bande passante est payée au Mo, partagée ou instable. Des projets comme local-npm ont prouvé l'idée et ont été abandonnés là où la bande passante ne coûte rien. relais est construit à Lomé, au Togo, pour les endroits où elle coûte.
+Le texte écrit par les auteurs de paquets (notes d'abandon) n'apparaît jamais dans `message` : il est renvoyé dans `untrusted.authorNote`, pour qu'un agent ne le prenne jamais pour une instruction.
+
+Tu peux l'écrire dans le fichier d'instructions de ton agent : _« Avant d'ajouter une dépendance npm, lance `npx @paskod121/relais check <nom> --json` et n'installe pas si le code de sortie n'est pas 0. »_
+
+## Pourquoi relais
+
+- **Pensé d'abord pour les agents.** Sortie structurée, codes de sortie stricts, explications claires qu'un modèle peut relayer à un humain.
+- **Économe.** Moins de 10 Ko par vérification pour un paquet populaire ; le document complet n'est téléchargé que pour les paquets peu utilisés, où il est petit. Fait à Lomé, où la data se paie au Mo.
+- **Sans télémétrie, sans compte, licence MIT.** Rien de ce que tu installes ne quitte ta machine, à part les requêtes vers npm et OSV.
+- **Zéro dépendance d'exécution.** Un outil de sécurité ne doit pas élargir ta surface d'attaque.
+
+## La sécurité de relais lui-même
+
+Un outil placé à cet endroit est une cible. Tout texte venant d'un registre est traité comme hostile (codes d'échappement, caractères invisibles et réponses géantes sont retirés ou refusés), relais n'a aucune dépendance d'exécution ni aucun token npm, et les versions sont publiées depuis la CI avec provenance. Ce contre quoi on se défend, et les limites connues : [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
+
+## Écosystèmes
+
+npm aujourd'hui. Le cœur est conçu pour qu'un nouveau registre tienne en un fichier : PyPI est le prochain, et les contributions sont bienvenues ([guide](docs/ADDING_AN_ECOSYSTEM.md)). `relais check pypi:requests` te dit déjà que c'est prévu.
+
+## La suite
+
+`relais check` est la première brique. Ensuite vient un registre local qui applique ces règles automatiquement à tout ce qui installe sur une machine ou un réseau : npm, pnpm, bun, les `npx` cachés dans les configurations MCP et les agents. Il gardera un journal lisible de ce que chaque agent a installé, notera les tentatives d'installation de paquets inexistants, et servira hors ligne les paquets déjà en cache. Voir [ROADMAP.md](ROADMAP.md) et [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Contribuer
 
-Bugs, rapports de terrain, documentation et code sont bienvenus, en français ou en anglais. Commence par [CONTRIBUTING.fr.md](CONTRIBUTING.fr.md) et cherche les issues marquées `good first issue`.
-- [Feuille de route](ROADMAP.md)
-- [Gouvernance](GOVERNANCE.md)
+Bugs, paquets suspects, documentation et code sont bienvenus, en français ou en anglais. Commence par [CONTRIBUTING.fr.md](CONTRIBUTING.fr.md). Si une IA t'a proposé un paquet louche, [signale-le](https://github.com/Paskod121/relais/issues/new?template=package_report.yml). Si le nom n'existe pas encore, signale-le [en privé](https://github.com/Paskod121/relais/security/advisories/new) : une liste publique de noms inventés aide les attaquants.
 - [Politique de sécurité](SECURITY.md)
+- [Gouvernance](GOVERNANCE.md)
 - [Code de conduite](CODE_OF_CONDUCT.md)
 
 ## Licence

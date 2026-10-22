@@ -1,10 +1,10 @@
 <h1 align="center">relais</h1>
 
-<p align="center"><strong>Download your dependencies once. Install them on every machine in the room.</strong></p>
+<p align="center"><strong>Your AI agent installs packages. relais checks each one first.</strong></p>
 
 <p align="center">
   <a href="https://github.com/Paskod121/relais/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Paskod121/relais/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://www.npmjs.com/package/@pasod121/relais"><img alt="npm" src="https://img.shields.io/npm/v/@pasod121/relais"></a>
+  <a href="https://www.npmjs.com/package/@paskod121/relais"><img alt="npm" src="https://img.shields.io/npm/v/@paskod121/relais"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/Paskod121/relais"><img alt="OpenSSF Scorecard" src="https://api.scorecard.dev/projects/github.com/Paskod121/relais/badge"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
 </p>
@@ -13,75 +13,86 @@
 
 ---
 
-A fresh Next.js project downloads about **215 MB** of packages. In a classroom of 30, that is **6.45 GB** of identical bytes pulled from the internet 30 times, paid for out of students' own mobile data.
+Coding agents now run `npm install` on their own, and nobody reads what they pull in. Language models invent package names in close to one code sample out of five in published research, attackers register those names, and worms such as Shai-Hulud spread through hundreds of real packages in a few days.
 
-relais is a small local relay for npm. One machine in the room fetches each package once; every other machine installs it from that machine, over the local Wi-Fi or a phone hotspot, without spending data.
+relais stands between your machine and npm and answers one question before anything is installed: **should this package be trusted, yes or no, and why?**
 
-## Status
-
-**Early. The relay is being designed in the open.** What ships today is `relais estimate`, which computes what a group would save. We are collecting real numbers from classrooms before building the relay itself, so the design follows the field, not the other way round.
-
-If you teach, organise a bootcamp or run a hackathon, a [field report](https://github.com/Paskod121/relais/issues/new?template=field_report.yml) is the most useful thing you can give right now.
-
-## What it costs today
-
-Measured on 22 October 2026 with an empty npm cache (npm 10.9, Node 22):
-
-| Starter stack             | Downloaded per machine | For a class of 30 |
-| ------------------------- | ---------------------- | ----------------- |
-| Next.js + React           | 215 MB                 | 6.45 GB           |
-| Tailwind + Vite           | 181 MB                 | 5.43 GB           |
-| Vite + React + TypeScript | 177 MB                 | 5.31 GB           |
-| Express                   | 8 MB                   | 240 MB            |
-
-Method and raw numbers: [docs/MEASUREMENTS.md](docs/MEASUREMENTS.md).
-
-## Try the estimator
+## Try it
 
 ```sh
-npx @pasod121/relais estimate --size 215 --installs 30 --price 540 --currency XOF
+npx @paskod121/relais check express react_dom
 ```
 
 ```text
-30 machines installing 215 MB each
+express@5.3.0  OK
+  info  Published 13 days ago.
+  info  Verified provenance: this version was built and published from public CI.
 
-  Downloaded without a relay  6.45 GB
-  Downloaded with a relay    215 MB
-  Data avoided              6.24 GB
-
-  Cost: F CFA 3,483 -> F CFA 116
-  Saved                      F CFA 3,367
+react_dom  BLOCKED
+  BLOCK  react_dom does not exist on npm. AI assistants often invent package names,
+         and attackers then register them to trap whoever installs them.
+         What to do: If you meant react-dom: npm install react-dom
 ```
 
-Set `RELAIS_LANG=fr` for French output. Requires Node 22.18 or later.
+Every problem comes with the next step, written for someone who started coding last month: the exact command to install the right package, or to update to the first version that fixes a known flaw.
 
-## How the relay will work
+Requires Node 22.18 or later. Set `RELAIS_LANG=fr` for French output.
 
-1. One machine runs `relais` and announces itself on the local network.
-2. Other machines point npm at it with a single command.
-3. The first request for a package goes to the official registry; every later request is served locally.
-4. Every package served is checked against the integrity hash published by the official registry, so a relay can never inject code.
-5. A counter shows the data and money saved after each session.
+## What it checks
 
-The design is open for discussion in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+| Check                                  | Verdict                            | Why it matters                                                   |
+| -------------------------------------- | ---------------------------------- | ---------------------------------------------------------------- |
+| The name exists on npm                 | Block if not                       | Invented names are the entry point of slopsquatting              |
+| Known malware (OSV `MAL-` advisories)  | Block                              | Published malicious packages are catalogued within hours         |
+| Age of the version                     | Block under 72 h (configurable)    | Most poisoned releases are caught within days                    |
+| Lookalike of a popular package         | Warn                               | Typosquats and near-miss names an AI may have mixed up           |
+| Package both brand new and barely used | Block (`--allow` for your own)     | The profile of a name registered as a trap                       |
+| Install-time scripts                   | Warn                               | The usual way malware runs on your machine                       |
+| Known vulnerabilities, deprecation     | Warn, with the first fixed version | Old projects and AI-suggested versions often pin broken releases |
+| Build provenance                       | Info                               | Links the version to its public source and CI                    |
 
-## Principles
+When something cannot be verified, relais says so. It never reports "safe" by default.
 
-- **Zero configuration** for the person installing. If it takes a tutorial, it failed.
-- **Never weaker than npm.** Integrity is verified; nothing is trusted because it is local.
-- **Cheap to contribute to.** No runtime dependencies. The full dev setup downloads about 71 MB, most of it the TypeScript and Biome compilers.
-- **Measured, not assumed.** Features ship when field reports show they matter.
+## For agents and CI
 
-## Why this exists
+```sh
+npx @paskod121/relais check some-package --json
+```
 
-Package managers are built for unlimited fibre. In much of Africa, and in classrooms, conferences and community centres everywhere, bandwidth is metered, shared or unreliable. Earlier projects such as local-npm proved the idea and were abandoned where bandwidth is cheap. relais is built in Lomé, Togo, for the places where it is not.
+| Exit code | Meaning                                                                |
+| --------- | ---------------------------------------------------------------------- |
+| 0         | Nothing blocking. Read the warnings.                                   |
+| 2         | At least one package is blocked. Do not install.                       |
+| 1         | Could not verify (network, registry, invalid name). Treat as not safe. |
+
+Text written by package authors (deprecation notes) never appears in `message`: it is returned in `untrusted.authorNote`, so an agent cannot mistake it for an instruction.
+
+You can tell your coding agent, in its instructions file: _"Before adding any npm dependency, run `npx @paskod121/relais check <name> --json` and do not install if the exit code is not 0."_
+
+## Why relais
+
+- **Built for agents first.** Structured output, strict exit codes, plain explanations a model can relay to a human.
+- **Frugal.** Under 10 KB per check for popular packages; the full metadata document is fetched only for rarely used packages, where it is small. Made in Lomé, where data is paid by the megabyte.
+- **No telemetry, no account, MIT.** Nothing about what you install leaves your machine except the queries to npm and OSV.
+- **Zero runtime dependencies.** A security tool should not widen your attack surface.
+
+## Security of relais itself
+
+A tool in this position is a target. Every string from a registry is treated as hostile (escape codes, invisible characters and oversized responses are stripped or refused), relais has no runtime dependencies and no npm token, and releases are published from CI with provenance. What we defend against, and the known gaps: [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
+
+## Ecosystems
+
+npm today. The core is built so that a new registry is one file: PyPI is next, and contributions are welcome ([guide](docs/ADDING_AN_ECOSYSTEM.md)). `relais check pypi:requests` already tells you it is planned.
+
+## Where it is going
+
+`relais check` is the first brick. Next comes a local registry that applies the same rules automatically to everything that installs on a machine or a network, npm, pnpm, bun, `npx` inside MCP configs and agents included, keeps a readable log of what each agent installed, records attempts to install packages that do not exist, and serves cached packages offline. See [ROADMAP.md](ROADMAP.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Contributing
 
-Bug reports, field reports, docs and code are all welcome, in English or French. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and look for issues labelled `good first issue`.
-- [Roadmap](ROADMAP.md)
-- [Governance](GOVERNANCE.md)
+Bug reports, suspicious packages, docs and code are welcome, in English or French. Start with [CONTRIBUTING.md](CONTRIBUTING.md). If an AI suggested a package that looked wrong, [report it](https://github.com/Paskod121/relais/issues/new?template=package_report.yml). If the name does not exist yet, report it [privately](https://github.com/Paskod121/relais/security/advisories/new): a public list of invented names helps attackers.
 - [Security policy](SECURITY.md)
+- [Governance](GOVERNANCE.md)
 - [Code of conduct](CODE_OF_CONDUCT.md)
 
 ## License

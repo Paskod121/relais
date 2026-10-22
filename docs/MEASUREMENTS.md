@@ -1,6 +1,6 @@
 # Measurements
 
-Numbers in this project come from runs anyone can repeat. Add yours through a [field report](https://github.com/Paskod121/relais/issues/new?template=field_report.yml) or a pull request to this file.
+Numbers in this project come from runs anyone can repeat. These measurements support the offline cache planned in Phase 2 of the [roadmap](../ROADMAP.md). Add yours through a pull request to this file.
 
 ## Download size of common starter stacks
 

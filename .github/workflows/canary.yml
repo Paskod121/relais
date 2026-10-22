@@ -1,0 +1,44 @@
+# Runs the live checks against npm and OSV every 6 hours, on the newest Node release.
+# If an upstream service changes its answers, an issue labelled "canary" is opened
+# (or updated) so the break is seen before users report it.
+name: Canary
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: latest
+          cache: npm
+      - run: npm ci
+      - run: npm run test:live
+      - name: Open or update the canary issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create canary --color B60205 --description "Live checks against npm or OSV failed" --force
+          existing=$(gh issue list --label canary --state open --json number --jq '.[0].number')
+          if [ -z "$existing" ]; then
+            gh issue create --label canary \
+              --title "Canary: live checks against npm or OSV are failing" \
+              --body "The scheduled live checks failed: $RUN_URL. An upstream API or Node release may have changed. Fix, then close this issue."
+          else
+            gh issue comment "$existing" --body "Still failing: $RUN_URL"
+          fi

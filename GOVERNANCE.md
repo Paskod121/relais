@@ -8,7 +8,7 @@ relais is maintained by its founder, [Pascal Sewonou (@Paskod121)](https://githu
 
 - Small changes: a maintainer reviews and merges.
 - Design changes (new protocol, new package manager, anything touching security): an issue or Discussion stays open at least 7 days for comments before a decision.
-- Features are prioritised by field reports: real measurements from real groups outweigh opinions, including the maintainer's.
+- Features are prioritised by real reports: packages people and agents actually ran into outweigh opinions, including the maintainer's.
 
 ## Becoming a maintainer
 
