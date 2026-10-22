@@ -18,7 +18,7 @@ Contributors who have landed several meaningful pull requests and reviewed other
 
 - Public questions: [GitHub Discussions](https://github.com/Paskod121/relais/discussions)
 - Security: [private vulnerability report](https://github.com/Paskod121/relais/security/advisories/new)
-- Code of conduct reports and private matters: CONTACT_EMAIL
+- Code of conduct reports and private matters: pascal1paskod2@gmail.com
 
 ## Changes to this document
 
