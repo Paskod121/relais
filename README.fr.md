@@ -2,6 +2,10 @@
 
 <p align="center"><strong>Ton agent IA installe des paquets. relais vérifie chacun d'eux avant.</strong></p>
 
+
+https://github.com/user-attachments/assets/dde4652b-0990-4526-9f39-e3d89d2a3a23
+
+
 <p align="center">
   <a href="https://github.com/Paskod121/relais/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Paskod121/relais/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://www.npmjs.com/package/@paskod121/relais"><img alt="npm" src="https://img.shields.io/npm/v/@paskod121/relais"></a>
