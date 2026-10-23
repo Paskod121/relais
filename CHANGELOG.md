@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/Paskod121/relais/compare/v0.1.0...v0.1.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* require Node versions patched for CVE-2026-111497 ([fe77e88](https://github.com/Paskod121/relais/commit/fe77e888078509e208d941c5030dbfd9c51ce3cb))
+
 ## 0.1.0 (2026-10-22)
 
 

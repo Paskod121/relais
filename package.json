@@ -1,6 +1,6 @@
 {
   "name": "@paskod121/relais",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Checks npm packages before you, or your AI coding agent, install them: invented names, fresh releases, known malware, lookalikes. Zero dependencies, no telemetry.",
   "keywords": [
     "npm",
