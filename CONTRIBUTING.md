@@ -11,7 +11,7 @@ Thanks for helping. Contributions in English or French are equally welcome. [Ver
 
 ## Set up
 
-Requires Node 22.18 or later (24 recommended, see `.nvmrc`).
+Requires Node 22.23.4 or later (24 recommended, see `.nvmrc`).
 
 ```sh
 git clone https://github.com/Paskod121/relais.git

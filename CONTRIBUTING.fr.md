@@ -11,7 +11,7 @@ Merci de ton aide. Les contributions en français ou en anglais sont également 
 
 ## Installer le projet
 
-Il faut Node 22.18 ou plus récent (24 conseillé, voir `.nvmrc`).
+Il faut Node 22.23.4 ou plus récent (24 conseillé, voir `.nvmrc`).
 
 ```sh
 git clone https://github.com/Paskod121/relais.git

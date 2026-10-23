@@ -37,7 +37,7 @@ react_dom  BLOQUÉ
 
 Chaque problème vient avec l'étape suivante, écrite pour quelqu'un qui a commencé à coder le mois dernier : la commande exacte pour installer le bon paquet, ou pour passer à la première version qui corrige une faille connue.
 
-Nécessite Node 22.18 ou plus récent.
+Nécessite Node 22.23.4 ou plus récent.
 
 ## Ce qui est vérifié
 

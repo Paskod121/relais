@@ -36,7 +36,7 @@ react_dom  BLOCKED
 
 Every problem comes with the next step, written for someone who started coding last month: the exact command to install the right package, or to update to the first version that fixes a known flaw.
 
-Requires Node 22.18 or later. Set `RELAIS_LANG=fr` for French output.
+Requires Node 22.23.4 or later.. Set `RELAIS_LANG=fr` for French output.
 
 ## What it checks
 
