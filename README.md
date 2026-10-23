@@ -2,6 +2,10 @@
 
 <p align="center"><strong>Your AI agent installs packages. relais checks each one first.</strong></p>
 
+
+https://github.com/user-attachments/assets/b09d6b4e-d2e9-44ca-a816-452c7e36e293
+
+
 <p align="center">
   <a href="https://github.com/Paskod121/relais/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Paskod121/relais/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://www.npmjs.com/package/@paskod121/relais"><img alt="npm" src="https://img.shields.io/npm/v/@paskod121/relais"></a>
